@@ -17,5 +17,5 @@ if __name__ == '__main__':
     # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
     # print(COSTCO_URL, COSTCO_DEAL_URL, COSTCO_USERNAME, COSTCO_PASSWORD)
     # print_path()
-    costco_crwaler = CostcoCrawler(is_dev=True)
+    costco_crwaler = CostcoCrawler(is_dev=False)
     costco_crwaler.run()

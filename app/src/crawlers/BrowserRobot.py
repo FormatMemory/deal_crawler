@@ -16,7 +16,7 @@ def get_driver(is_dev=True):
                     '''option to make driver work background'''
                     chrome_options.add_argument('--headless')
                     chrome_options.add_argument('--disable-gpu')
-                driver = webdriver.Chrome(chrome_driver, chrome_options=chrome_options)
+                driver = webdriver.Chrome(executable_path=chrome_driver, chrome_options=chrome_options)
             except Exception as e:
                 continue
             else:
