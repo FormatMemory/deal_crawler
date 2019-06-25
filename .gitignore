@@ -1,6 +1,6 @@
 # temporary, output
 tmp/
-output/*
+output/
 
 # config & secret
 secret.py
