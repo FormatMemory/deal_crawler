@@ -3,9 +3,9 @@ from config.secret import COSTCO_URL, COSTCO_DEAL_URL, COSTCO_USERNAME, COSTCO_P
 
 
 class CostcoCrawler(BrowserRobot):
-    def __init__(self):
+    def __init__(self, is_dev=True):
         self.driver = None
-        BrowserRobot.__init__(self)
+        BrowserRobot.__init__(self, is_dev)
 
     def run(self):
         try:

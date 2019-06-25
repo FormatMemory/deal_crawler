@@ -1,16 +1,22 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 from config.settings import CHROME_DRIVERS, CHROME_DRIVER_VERSIONS, OUTPUT_FILE_PATH
 import os
 import datetime
 
-def get_driver():
+def get_driver(is_dev=True):
     for chrome_driver in CHROME_DRIVERS:
         if not os.path.isfile(chrome_driver):
             print("WARNING: "+ chrome_driver + " does not exist")
         else:
             try:
-                driver = webdriver.Chrome(chrome_driver)
+                chrome_options = Options()
+                if not is_dev:
+                    '''option to make driver work background'''
+                    chrome_options.add_argument('--headless')
+                    chrome_options.add_argument('--disable-gpu')
+                driver = webdriver.Chrome(chrome_driver, chrome_options=chrome_options)
             except Exception as e:
                 continue
             else:
@@ -19,8 +25,8 @@ def get_driver():
         raise Exception("ERROR: Canoot find fit Chrome driver and browser...")
 
 class BrowserRobot:
-    def __init__(self):
-        self.driver = get_driver()
+    def __init__(self, is_dev=True):
+        self.driver = get_driver(is_dev)
 
     def __del__(self):
         if self.driver:
