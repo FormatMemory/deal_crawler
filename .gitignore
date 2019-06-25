@@ -1,5 +1,7 @@
-# temeratemporary
+# temporary, output
 tmp/
+output/*
+
 # config & secret
 secret.py
 
