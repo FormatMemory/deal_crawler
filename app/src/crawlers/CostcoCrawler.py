@@ -1,6 +1,6 @@
 from src.crawlers.BrowserRobot import BrowserRobot
-from config.secret import COSTCO_URL, COSTCO_DEAL_URL, COSTCO_USERNAME, COSTCO_PASSWORD
-
+from config.secret import COSTCO_USERNAME, COSTCO_PASSWORD
+from config.settings import COSTCO_URL, COSTCO_DEAL_URL
 
 class CostcoCrawler(BrowserRobot):
     def __init__(self, is_dev=True):
