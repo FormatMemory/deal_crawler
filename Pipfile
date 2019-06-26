@@ -11,6 +11,7 @@ requests = "==2.22.0"
 beautifulsoup4 = "==4.7.1"
 lxml = "*"
 selenium = "*"
+dicttoxml = "*"
 
 [requires]
 python_version = "3.7"
