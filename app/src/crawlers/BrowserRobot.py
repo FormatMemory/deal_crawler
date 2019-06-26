@@ -1,9 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-from config.settings import CHROME_DRIVERS, CHROME_DRIVER_VERSIONS, OUTPUT_FILE_PATH
+from config.settings import CHROME_DRIVERS, CHROME_DRIVER_VERSIONS
 import os
-import datetime
+from src.utils.SaveSource import save_source_to_file
 
 def get_driver(is_dev=True):
     for chrome_driver in CHROME_DRIVERS:
@@ -40,11 +40,5 @@ class BrowserRobot:
             self.driver.quit()
 
     def save_source(self, filename=""):
-        if not filename:
-            filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.html'.format( date=datetime.datetime.now() )
-        path = os.path.join(OUTPUT_FILE_PATH, filename)
-        html = self.driver.page_source
-        with open(path, 'w') as f:
-            f.write(html)
         assert "No results found." not in self.driver.page_source
-        print("Save file at "+path)
+        save_source_to_file(self.driver.page_source, filename)
