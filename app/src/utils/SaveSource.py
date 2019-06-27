@@ -3,6 +3,7 @@ import os
 from config.settings import OUTPUT_FILE_PATH
 import json
 from dicttoxml import dicttoxml
+import csv
 
 def save_source_to_file(source, *args, **kwargs):
     if not "filename" in kwargs or not kwargs["filename"]:
@@ -35,21 +36,38 @@ def save_json_to_xml(source, *args, **kwargs):
         print("Save file at "+path)
 
 
-def save_json_to_csv(source, *args, **kwargs):
-    print(type(source))
-    return 
-    if not "filename" in kwargs or not kwargs["filename"]:
-        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.csv'.format( date=datetime.datetime.now() )
-    else:
+def save_dict_to_csv(source, *args, **kwargs):
+    if type(source) != dict:
+        raise Exception("ERROR at save_dict_to_csv: Expect input source in dict type but received "+ type(source))
+    if "filename" in kwargs and  kwargs["filename"]:
         filename = kwargs["filename"]
+    else:
+        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.csv'.format( date=datetime.datetime.now() )
     path = os.path.join(OUTPUT_FILE_PATH, filename)
     try:
-        # data = [json.loads(i) for i in source if i]
-        data = source
-        with open(path, 'wb') as f:
-            f.writerow(data[0].keys())
-            for row in data:
-                f.writerow(row.values())
+        with open(path, 'w') as f:  # Just use 'w' mode in 3.x
+            w = csv.DictWriter(f, source.keys())
+            w.writeheader()
+            w.writerow(source)
+    except Exception as e:
+        print("ERROR at save_json_to_csv: " + str(e))
+    else:
+        print("Save file at "+path)
+
+def save_list_dict_to_csv(source, *args, **kwargs):
+    if type(source) != list:
+        raise Exception("ERROR at save_dict_to_csv: Expect input source in list type but received "+ type(source))
+    if "filename" in kwargs and  kwargs["filename"]:
+        filename = kwargs["filename"]
+    else:
+        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.csv'.format( date=datetime.datetime.now() )
+    path = os.path.join(OUTPUT_FILE_PATH, filename)
+    try:
+        with open(path, 'w') as f:  # Just use 'w' mode in 3.x
+            w = csv.DictWriter(f, source[0].keys())
+            w.writeheader()
+            for r in source:
+                w.writerow(r)
     except Exception as e:
         print("ERROR at save_json_to_csv: " + str(e))
     else:
