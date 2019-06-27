@@ -4,11 +4,17 @@ from config.settings import OUTPUT_FILE_PATH
 import json
 from dicttoxml import dicttoxml
 import csv
+import uuid
 
+def generateDateFileName(fileType, prefix="test"):
+    return prefix+ "-{date:%Y%m%d_%H%M%S}".format( date=datetime.datetime.now() ) + "." + fileType
+
+def generateUniqueFileName(fileType, prefix="default"):
+    return prefix+ "_" +str(uuid.uuid4())
 
 def save_source_to_file(source, *args, **kwargs):
     if not "filename" in kwargs or not kwargs["filename"]:
-        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.html'.format( date=datetime.datetime.now() )
+        filename = generateDateFileName("html")
     else:
         filename = kwargs["filename"]
     path = os.path.join(OUTPUT_FILE_PATH, filename)
@@ -23,7 +29,7 @@ def save_source_to_file(source, *args, **kwargs):
 
 def save_json_to_xml(source, *args, **kwargs):
     if not "filename" in kwargs or not kwargs["filename"]:
-        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.xml'.format( date=datetime.datetime.now() )
+        filename = generateDateFileName("xml")
     else:
         filename = kwargs["filename"]
     path = os.path.join(OUTPUT_FILE_PATH, filename)
@@ -43,7 +49,7 @@ def save_dict_to_csv(source, *args, **kwargs):
     if "filename" in kwargs and  kwargs["filename"]:
         filename = kwargs["filename"]
     else:
-        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.csv'.format( date=datetime.datetime.now() )
+        filename = generateDateFileName("csv")
     path = os.path.join(OUTPUT_FILE_PATH, filename)
     try:
         with open(path, 'w') as f:  # Just use 'w' mode in 3.x
@@ -64,7 +70,7 @@ def save_list_dict_to_csv(source, *args, **kwargs):
     if "filename" in kwargs and  kwargs["filename"]:
         filename = kwargs["filename"]
     else:
-        filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.csv'.format( date=datetime.datetime.now() )
+        filename = filename = generateDateFileName("csv")
     path = os.path.join(OUTPUT_FILE_PATH, filename)
     try:
         with open(path, 'w') as f:  # Just use 'w' mode in 3.x
