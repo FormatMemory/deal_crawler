@@ -5,6 +5,7 @@ import json
 from dicttoxml import dicttoxml
 import csv
 
+
 def save_source_to_file(source, *args, **kwargs):
     if not "filename" in kwargs or not kwargs["filename"]:
         filename = 'test-{date:%Y-%m-%d_%H:%M:%S}.html'.format( date=datetime.datetime.now() )
@@ -57,6 +58,9 @@ def save_dict_to_csv(source, *args, **kwargs):
 def save_list_dict_to_csv(source, *args, **kwargs):
     if type(source) != list:
         raise Exception("ERROR at save_dict_to_csv: Expect input source in list type but received "+ type(source))
+    if len(source) == 0:
+        raise Exception("ERROR at save_dict_to_csv: empty source input")
+
     if "filename" in kwargs and  kwargs["filename"]:
         filename = kwargs["filename"]
     else:
@@ -69,6 +73,7 @@ def save_list_dict_to_csv(source, *args, **kwargs):
             for r in source:
                 w.writerow(r)
     except Exception as e:
-        print("ERROR at save_json_to_csv: " + str(e))
+        print("ERROR at save_list_dict_to_csv: " + str(e))
     else:
+        print("Total rows:" + str(len(source)))
         print("Save file at "+path)
