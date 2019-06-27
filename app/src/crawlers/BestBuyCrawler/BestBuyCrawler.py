@@ -10,12 +10,24 @@ class BestBuyCrawler:
     '''
     Fetch data via best buy api
     '''
-    def __init__(self):
-        pass
 
-    def run(self, page=1):
+    def __init__(self):
+        self.defaultOptions = [
+                        "accessories.sku","bestSellingRank","categoryPath.id","categoryPath.name","customerReviewAverage",
+                        "customerReviewCount","description","details.name","details.value","dollarSavings","features.feature",
+                        "freeShipping","includedItemList.includedItem","longDescription","manufacturer","mobileUrl",
+                        "modelNumber","name","onSale","percentSavings","regularPrice","relatedProducts.sku","salePrice",
+                        "shipping","shortDescription","sku","type","upc","url"
+                        ]
+        self.offerOptions = ["offers.endDate", "offers.startDate", "offers.text", "offers.type"]
+        self.imageOptions = ["image", "accessoriesImage", "alternateViewsImage", "angleImage", "backViewImage", 
+                    "energyGuideImage", "largeFrontImage", "largeImage", "leftViewImage", "mediumImage",
+                "remoteControlImage","rightViewImage","spin360Url","thumbnailImage","topViewImage"]
+        self.showOptions = self.defaultOptions  + self.offerOptions + self.imageOptions
+    
+    def run(self, totalPage=1):
         products = []
-        for i in range(1,4):
+        for i in range(1,totalPage+1):
             products.extend(self.fetch_onsale_products(page=i, percentSavings=50))
         save_list_dict_to_csv(products)
 
@@ -24,17 +36,13 @@ class BestBuyCrawler:
         Fetch onsale products via best buy api
         return a list of products
         """
-        showOptions = [
-                        "accessories.sku","bestSellingRank","categoryPath.id","categoryPath.name","customerReviewAverage",
-                        "customerReviewCount","description","details.name","details.value","dollarSavings","features.feature",
-                        "freeShipping","image","includedItemList.includedItem","longDescription","manufacturer","mobileUrl",
-                        "modelNumber","name","onSale","percentSavings","regularPrice","relatedProducts.sku","salePrice",
-                        "shipping","shortDescription","sku","thumbnailImage","type","upc","url"
-                        ]
+
+        show = ",".join(self.showOptions)
+        print()
         params = {
             "apiKey" : BESTBUY_API_TOKEN,
             "sort" : "bestSellingRank.asc",
-            "show" : ",".join(showOptions),
+            "show" : show,
             "pageSize" : 100,
             "page" : page,
             "acet" : "onSale",

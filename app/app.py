@@ -17,4 +17,4 @@ if __name__ == '__main__':
     # costco_crwaler = CostcoCrawler(is_dev=False)
     # costco_crwaler.run()
     bb = BestBuyCrawler()
-    bb.run()
+    bb.run(totalPage = 2)
