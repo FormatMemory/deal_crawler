@@ -14,3 +14,5 @@ COSTCO_DEAL_URL = "https://www.costco.com/warehouse-hot-buys.html"
 BESTBUY_DEAL_URL = ""
 BESTBUY_API_URL = "http://api.bestbuy.com/v1/"
 BESTBUY_API_PRODUCTS_URL = "https://api.bestbuy.com/v1/products"
+
+DEBUG_MODE = True
