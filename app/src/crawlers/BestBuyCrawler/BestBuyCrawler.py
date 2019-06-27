@@ -13,19 +13,37 @@ class BestBuyCrawler:
     def __init__(self):
         pass
 
-    def run(self):
+    def run(self, page=1):
+        products = []
+        for i in range(1,4):
+            products.extend(self.fetch_onsale_products(page=i, percentSavings=50))
+        save_list_dict_to_csv(products)
+
+    def fetch_onsale_products(self, page=1, percentSavings=50):
+        """
+        Fetch onsale products via best buy api
+        return a list of products
+        """
+        showOptions = [
+                        "accessories.sku","bestSellingRank","categoryPath.id","categoryPath.name","customerReviewAverage",
+                        "customerReviewCount","description","details.name","details.value","dollarSavings","features.feature",
+                        "freeShipping","image","includedItemList.includedItem","longDescription","manufacturer","mobileUrl",
+                        "modelNumber","name","onSale","percentSavings","regularPrice","relatedProducts.sku","salePrice",
+                        "shipping","shortDescription","sku","thumbnailImage","type","upc","url"
+                        ]
         params = {
             "apiKey" : BESTBUY_API_TOKEN,
             "sort" : "bestSellingRank.asc",
-            "show" : "accessories.sku,bestSellingRank,categoryPath.id,categoryPath.name,customerReviewAverage,customerReviewCount,description,details.name,details.value,dollarSavings,features.feature,freeShipping,image,includedItemList.includedItem,longDescription,manufacturer,mobileUrl,modelNumber,name,onSale,percentSavings,regularPrice,relatedProducts.sku,salePrice,shipping,shortDescription,sku,thumbnailImage,type,upc,url",
-            "pageSize" : 3,
-            "page" : 2,
+            "show" : ",".join(showOptions),
+            "pageSize" : 100,
+            "page" : page,
             "acet" : "onSale",
             "format" : "json"
         }
-        special_condition = "(onSale=true&percentSavings>50)"
+
+        special_condition = "(onSale=true&percentSavings>="+str(percentSavings)+")"
         try:
-            res = requests.get(BESTBUY_API_PRODUCTS_URL+special_condition, params=params, timeout=3)
+            res = requests.get(BESTBUY_API_PRODUCTS_URL+special_condition, params=params)
             res.raise_for_status()
             res.encoding = 'utf-8'
 
@@ -35,14 +53,18 @@ class BestBuyCrawler:
                     print(k+": "+ str(res.json()[k]))
                 else:
                     print("")
-            source = res.json()["products"]
-            for p in res.json()["products"]:
-                print(p)
-                print(".....")
-                print(".....")
-            save_list_dict_to_csv(source)
-           
+
+                # # print return info in terminal
+                # for i, v in enumerate(res.json()["products"]):
+                #     print(i)
+                #     print(v)
+                #     print(".....")
+                #     print(".....")
+
+            return res.json()["products"]
+
         except Exception as err:
-            print(f'Error occurred: {err}')
+            print(f'Error occurred in BestBuyCrawler.fetch_onsale_products: {err}')
+            return []
         else:
             print("Success")
