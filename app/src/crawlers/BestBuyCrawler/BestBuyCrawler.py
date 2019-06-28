@@ -4,7 +4,7 @@ import requests
 import json
 from src.utils.SaveSource import save_source_to_file, save_json_to_xml, save_dict_to_csv, save_list_dict_to_csv
 import csv
-
+import time
 
 class BestBuyCrawler:
     '''
@@ -29,6 +29,7 @@ class BestBuyCrawler:
         products = []
         for i in range(1,totalPage+1):
             products.extend(self.fetch_onsale_products(page=i, percentSavings=50))
+            time.sleep(1) # sleep 1 sec to avoid Over Quota
         save_list_dict_to_csv(products)
 
     def fetch_onsale_products(self, page=1, percentSavings=50):
