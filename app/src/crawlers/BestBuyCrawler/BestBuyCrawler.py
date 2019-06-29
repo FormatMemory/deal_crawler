@@ -5,11 +5,12 @@ import json
 from src.utils.SaveSource import save_source_to_file, save_json_to_xml, save_dict_to_csv, save_list_dict_to_csv
 import csv
 import time
+from src.urils.Uploader import Uploader
 
 class BestBuyCrawler:
-    '''
+    """
     Fetch data via best buy api
-    '''
+    """
 
     def __init__(self):
         self.defaultOptions = [
@@ -24,13 +25,59 @@ class BestBuyCrawler:
                     "energyGuideImage", "largeFrontImage", "largeImage", "leftViewImage", "mediumImage",
                 "remoteControlImage","rightViewImage","spin360Url","thumbnailImage","topViewImage"]
         self.showOptions = self.defaultOptions  + self.offerOptions + self.imageOptions
+
+        self.nomalize_dict = {
+            # "image": "image",
+            # "sku": "sku",
+            # "date_start": "date_start",
+            # "date_expire": "date_expire",
+            # "details": "details",
+            # "coupon_code": "coupon_code",
+            # "category": "category",
+            # "source": "source",
+            # "features": "features",
+            # "manufacturer": "manufacturer",
+
+            "deal_link": "mobileUrl",
+            "title": "name",
+            "body": "longDescription",
+            "customer_review": "customerReviewAverage",
+            "dollar_savings": "dollarSavings",
+            "model_number": "modelNumber",
+            "percent_savings": "percentSavings",
+            "regular_price": "regularPrice",
+            "sale_price": "salePrice",
+        }
     
-    def run(self, totalPage=1):
-        products = []
-        for i in range(1,totalPage+1):
-            products.extend(self.fetch_onsale_products(page=i, percentSavings=50))
-            time.sleep(1) # sleep 1 sec to avoid Over Quota
-        save_list_dict_to_csv(products)
+    def run(self, totalPage=1,  *args, **kwargs):
+        if "save_csv" in kwargs and kwargs["save_csv"]:
+            products = []
+            for i in range(1,totalPage+1):
+                products.extend(self.fetch_onsale_products(page=i, percentSavings=50))
+                time.sleep(1) # sleep 1 sec to avoid Over Quota
+            save_list_dict_to_csv(products)
+
+        if "upload_deals" in kwargs and kwargs["upload_deals"]:
+            uploader = Uploader()
+            for i in range(1,totalPage+1):
+                deals = self.fetch_onsale_products(page=i, percentSavings=50)
+                deals = self.normalize_deals_content(deals, self.nomalize_dict)
+                uploader.upload_deals(deals)
+                time.sleep(1) # sleep 1 sec to avoid Over Quota
+
+    def normalize_deals_content(self, deals, nomalize_dict):
+        """
+        Normalize deal
+        """
+        for deal in deals:
+            for k, v in nomalize_dict.items():
+                if k not in deal:
+                    deal[k] = deal[v]
+                    del deal[v]
+            deal["date_start"] = deal["offers"][0]["startDate"]
+            deal["date_expire"] = deal["offers"][0]["endDate"]
+            deal["source"] = "BestBuy"
+        return deals
 
     def fetch_onsale_products(self, page=1, percentSavings=50):
         """
@@ -54,7 +101,7 @@ class BestBuyCrawler:
         try:
             res = requests.get(BESTBUY_API_PRODUCTS_URL+special_condition, params=params)
             res.raise_for_status()
-            res.encoding = 'utf-8'
+            res.encoding = "utf-8"
 
             if DEBUG_MODE:
                 # print Debug info when debug_mode is true
@@ -73,7 +120,7 @@ class BestBuyCrawler:
             return res.json()["products"]
 
         except Exception as err:
-            print(f'Error occurred in BestBuyCrawler.fetch_onsale_products: {err}')
+            print(f"Error occurred in BestBuyCrawler.fetch_onsale_products: {err}")
             return []
         else:
             print("Success")
