@@ -1,16 +1,10 @@
-import datetime
 import os
 from config.settings import OUTPUT_FILE_PATH
 import json
 from dicttoxml import dicttoxml
 import csv
-import uuid
+from src.utils.NameGenerator import generateDateFileName
 
-def generateDateFileName(fileType, prefix="test"):
-    return prefix+ "-{date:%Y%m%d_%H%M%S}".format( date=datetime.datetime.now() ) + "." + fileType
-
-def generateUniqueFileName(fileType, prefix="default"):
-    return prefix+ "_" +str(uuid.uuid4())
 
 def save_source_to_file(source, *args, **kwargs):
     if not "filename" in kwargs or not kwargs["filename"]:
