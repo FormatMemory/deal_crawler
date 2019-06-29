@@ -43,9 +43,9 @@ class Uploader:
 
     def upload_single_deal(self, deal, image_fields = ["image"]):
         if deal is not dict:
-            raise Exception("Error orrcused at upload_single_deal: input deal should be in dict type, but "+str(type(deal))+" received")
+            raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should be in dict type, but "+str(type(deal))+" received")
         if "title" not in deal or "body" not in deal or "image" not in deal:
-            raise Exception("Error orrcused at upload_single_deal: input deal should at least contain title, body and image")
+            raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should at least contain title, body and image")
         
         for image_filed in image_fields:
             deal[image_filed] = image_getter(deal, image_filed)
@@ -53,7 +53,13 @@ class Uploader:
             print("Upload:")
             print(deal)
             print("\n")
-        requests.post(DEAL_SITE_API_DOOR, params=deal, headers=self.headers)
+
+        res = requests.post(DEAL_SITE_API_DOOR, params=deal, headers=self.headers)
+        if res.status_code != 200:
+            print(res.reason)
+            print(res.request)
+            raise Exception("Error orrcused at Uploader.upload_single_deal: upload error")
+
 
     def run(self, deals, image_fields = ["image"]):
         print("Uploader start to run...")
