@@ -19,17 +19,22 @@ class Uploader:
             "Authorization: Token ": DEAL_SITE_TOKEN
         }
 
-    def run(self, deals, image_fields = ["image"]):
+    def upload_deals(self, deals, image_fields = ["image"], deal_chunk=5):
+        """
+        Upload deals to upload_link, there will be one second sleep for every 5 deal uploads
+
+        """
         print("Uploader start to run...")
         count = 0
         for deal in deals:
-            self.upload_single_deal(deal, image_fields)
-            count +=1 
-            if count%5 == 0:
+            self.upload_single_deal(deal, image_fields, upload_link)
+            count +=1
+            if count%deal_chunk == 0:
                 time.sleep(1)
         print("Uploader run finish")
 
-    def upload_single_deal(self, deal, image_fields = ["image"]):
+
+    def upload_single_deal(self, deal, image_fields = ["image"], upload_link = DEAL_SITE_API_DOOR):
         '''
         Upload a single deal to DEALSITE
         deal: a dict contains one deal post's info.;  must contain title, body and image
@@ -47,7 +52,7 @@ class Uploader:
             print(deal)
             print("\n")
 
-        res = requests.post(DEAL_SITE_API_DOOR, params=deal, headers=self.headers)
+        res = requests.post(upload_link, params=deal, headers=self.headers)
         if res.status_code != 200:
             print(res.reason)
             print(res.request)
