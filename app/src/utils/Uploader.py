@@ -5,28 +5,6 @@ from config.secret import DEAL_SITE_API_DOOR, DEAL_SITE_TOKEN
 from src.utils.NameGenerator import generateUniqueFileName
 
 
-def image_getter(deal, image_field = "image", save_file=False, save_path=IMG_SAVE_PATH):
-    '''
-    Get Image file from link deal[image_field]
-    Save file to SAVE_PATH
-    '''
-    url = deal[image_field]
-    filetype = url.replace(' ', '').split('.')[-1]
-    if "source" in deal:
-        name = generateUniqueFileName(filetype, deal["source"])
-    else:
-        name = generateUniqueFileName(filetype, "")
-    r = requests.get(url, stream=True, allow_redirects=True)
-    r.raise_for_status()
-    if save_file:
-        if DEBUG_MODE:
-            print(url+"\n       ---> "+save_path + name)
-        with open(save_path + name, 'wb') as f:
-            for chunk in r.iter_content(chunk_size = 128):
-                f.write(chunk)
-    return r.content
-
-
 class Uploader:
     '''
     Upload deal to deal site 
@@ -41,7 +19,22 @@ class Uploader:
             "Authorization: Token ": DEAL_SITE_TOKEN
         }
 
+    def run(self, deals, image_fields = ["image"]):
+        print("Uploader start to run...")
+        count = 0
+        for deal in deals:
+            self.upload_single_deal(deal, image_fields)
+            count +=1 
+            if count%5 == 0:
+                time.sleep(1)
+        print("Uploader run finish")
+
     def upload_single_deal(self, deal, image_fields = ["image"]):
+        '''
+        Upload a single deal to DEALSITE
+        deal: a dict contains one deal post's info.;  must contain title, body and image
+        image_fields: a list of field names for image urls in input deal
+        '''
         if deal is not dict:
             raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should be in dict type, but "+str(type(deal))+" received")
         if "title" not in deal or "body" not in deal or "image" not in deal:
@@ -61,12 +54,23 @@ class Uploader:
             raise Exception("Error orrcused at Uploader.upload_single_deal: upload error")
 
 
-    def run(self, deals, image_fields = ["image"]):
-        print("Uploader start to run...")
-        count = 0
-        for deal in deals:
-            self.upload_single_deal(deal, image_fields)
-            count +=1 
-            if count%5 == 0:
-                time.sleep(1)
-        print("Uploader run finish")
+    def image_getter(deal, image_field = "image", save_file=False, save_path=IMG_SAVE_PATH):
+        '''
+        Get Image file from link deal[image_field]
+        Save file to SAVE_PATH
+        '''
+        url = deal[image_field]
+        filetype = url.replace(' ', '').split('.')[-1]
+        if "source" in deal:
+            name = generateUniqueFileName(filetype, deal["source"])
+        else:
+            name = generateUniqueFileName(filetype, "")
+        r = requests.get(url, stream=True, allow_redirects=True)
+        r.raise_for_status()
+        if save_file:
+            if DEBUG_MODE:
+                print(url+"\n       ---> "+save_path + name)
+            with open(save_path + name, 'wb') as f:
+                for chunk in r.iter_content(chunk_size = 128):
+                    f.write(chunk)
+        return r.content
