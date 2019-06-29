@@ -7,6 +7,7 @@ CHROME_DRIVERS = [
     os.path.join(CHROME_DRIVER_PATH, "chromedriver_" + dv) for dv in CHROME_DRIVER_VERSIONS
 ]
 OUTPUT_FILE_PATH =  os.path.join(BASE_DIR, "output")
+IMG_SAVE_PATH = os.join(BASE_DIR, "img/")
 
 COSTCO_URL = "https://www.costco.com/"
 COSTCO_DEAL_URL = "https://www.costco.com/warehouse-hot-buys.html"
