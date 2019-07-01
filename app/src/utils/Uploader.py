@@ -16,10 +16,10 @@ class Uploader:
         if not DEAL_SITE_TOKEN:
             raise Exception("Error when initialting Uploader: TOKEN cannot be empty...")
         self.headers = {
-            "Authorization: Token ": DEAL_SITE_TOKEN
+            "Authorization": "Token " + DEAL_SITE_TOKEN
         }
 
-    def upload_deals(self, deals, image_fields = ["image"], deal_chunk=5):
+    def upload_deals(self, deals, image_fields = ["image"], deal_chunk=5, upload_link = DEAL_SITE_API_DOOR):
         """
         Upload deals to upload_link, there will be one second sleep for every 5 deal uploads
 
@@ -40,13 +40,14 @@ class Uploader:
         deal: a dict contains one deal post's info.;  must contain title, body and image
         image_fields: a list of field names for image urls in input deal
         '''
-        if deal is not dict:
-            raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should be in dict type, but "+str(type(deal))+" received")
+
+        if type(deal) is not dict:
+            raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should be in dict type, but "+type(deal)+" received")
         if "title" not in deal or "body" not in deal or "image" not in deal:
             raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should at least contain title, body and image")
         
         for image_filed in image_fields:
-            deal[image_filed] = image_getter(deal, image_filed)
+            deal[image_filed] = self.image_getter(deal, image_filed)
         if DEBUG_MODE:
             print("Upload:")
             print(deal)
@@ -59,7 +60,7 @@ class Uploader:
             raise Exception("Error orrcused at Uploader.upload_single_deal: upload error")
 
 
-    def image_getter(deal, image_field = "image", save_file=False, save_path=IMG_SAVE_PATH):
+    def image_getter(self, deal, image_field = "image", save_file=False, save_path=IMG_SAVE_PATH):
         '''
         Get Image file from link deal[image_field]
         Save file to SAVE_PATH
