@@ -93,8 +93,9 @@ class BestBuyCrawler:
                 if k not in deal:
                     deal[k] = deal[v]
                     del deal[v]
-            deal["date_start"] = deal["offers"][0]["startDate"]
-            deal["date_expire"] = deal["offers"][0]["endDate"]
+            if len(deal["offers"]):
+                deal["date_start"] = deal["offers"][0]["startDate"]
+                deal["date_expire"] = deal["offers"][0]["endDate"]
             deal["source"] = "BestBuy"
         return deals
 
@@ -166,9 +167,10 @@ class BestBuyCrawler:
             res.raise_for_status()
             res.encoding = "utf-8"
             totalPages = res.json()["totalPages"]
+            time.sleep(1) # avoid Over Quota
         except Exception as err:
             print(f"Error occurred in BestBuyCrawler.get_total_page: {err}")
             return 0
         else:
             print("Total pages: "+str(totalPages ))
-            return totalPagest
+            return totalPages
