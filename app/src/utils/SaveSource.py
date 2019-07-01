@@ -3,7 +3,7 @@ from config.settings import OUTPUT_FILE_PATH
 import json
 from dicttoxml import dicttoxml
 import csv
-from src.utils.NameGenerator import generateDateFileName
+from src.utils.NameGenerators import generateDateFileName
 
 
 def save_source_to_file(source, *args, **kwargs):

@@ -2,7 +2,7 @@ import requests
 import time
 from config.settings import IMG_SAVE_PATH, DEBUG_MODE
 from config.secret import DEAL_SITE_API_DOOR, DEAL_SITE_TOKEN
-from src.utils.NameGenerator import generateUniqueFileName
+from src.utils.NameGenerators import generateUniqueFileName
 
 
 class Uploader:
