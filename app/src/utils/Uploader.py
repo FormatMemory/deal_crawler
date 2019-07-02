@@ -1,7 +1,7 @@
 import requests
 import time
 from config.settings import IMG_SAVE_PATH, DEBUG_MODE
-from config.secret import DEAL_SITE_API_DOOR, DEAL_SITE_TOKEN
+from config.secret import DEAL_SITE_API_DOOR, DEAL_SITE_TOKEN, DEAL_SITE_API_ENDPOINT
 from src.utils.NameGenerators import generateUniqueFileName
 
 
@@ -10,7 +10,7 @@ class Uploader:
     Upload deal to deal site 
     '''
     def __init__(self):
-        ret = requests.get(DEAL_SITE_API_DOOR)
+        ret = requests.get(DEAL_SITE_API_ENDPOINT)
         if ret.status_code != 200:
             raise Exception("Error when initialting Uploader: Deal Site Api Door cannot be connected....", str(DEAL_SITE_API_DOOR))
         if not DEAL_SITE_TOKEN:
@@ -46,21 +46,27 @@ class Uploader:
         if "title" not in deal or "body" not in deal or "image" not in deal:
             raise Exception("Error orrcused at Uploader.upload_single_deal: input deal should at least contain title, body and image")
         
+        images = {}
         for image_filed in image_fields:
-            deal[image_filed] = self.image_getter(deal, image_filed)
+            image_name, content, file_path = self.image_getter(deal, image_filed)
+            images[image_filed] = (image_name, open(file_path, 'wr'), "multipart/form-data")
+            del deal[image_filed]
+            # ('file.zip', open('file.zip', 'rb'), 'text/plain')
         if DEBUG_MODE:
             print("Upload:")
             print(deal)
             print("\n")
-
-        res = requests.post(upload_link, params=deal, headers=self.headers)
-        if res.status_code != 200:
+        
+        res = requests.post(upload_link, files=images, json=deal, headers=self.headers)
+        time.sleep(1)
+        print(res.status_code)
+        if res.status_code == 400:
             print(res.reason)
-            print(res.request)
+            print(res.text)
             raise Exception("Error orrcused at Uploader.upload_single_deal: upload error")
 
 
-    def image_getter(self, deal, image_field = "image", save_file=False, save_path=IMG_SAVE_PATH):
+    def image_getter(self, deal, image_field = "image", save_file=True, save_path=IMG_SAVE_PATH):
         '''
         Get Image file from link deal[image_field]
         Save file to SAVE_PATH
@@ -79,4 +85,4 @@ class Uploader:
             with open(save_path + name, 'wb') as f:
                 for chunk in r.iter_content(chunk_size = 128):
                     f.write(chunk)
-        return r.content
+        return name, r.content,save_path + name 
