@@ -12,6 +12,7 @@ beautifulsoup4 = "==4.7.1"
 lxml = "*"
 selenium = "*"
 dicttoxml = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
