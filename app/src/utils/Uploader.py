@@ -19,7 +19,7 @@ class Uploader:
             raise Exception("Error when initialting Uploader: TOKEN cannot be empty...")
         self.headers = {
             "Authorization": "Token " + DEAL_SITE_TOKEN,
-            "content-type": "multipart/form-data"
+            "Content-Type": "application/x-www-form-urlencoded"
         }
 
     def upload_deals(self, deals, image_fields = ["image"], deal_chunk=5, upload_link = DEAL_SITE_API_DOOR):
@@ -65,8 +65,9 @@ class Uploader:
                 print(images)
                 print("\n")
 
-            res = requests.post(upload_link,  params=json.dumps(deal), headers=self.headers)
-            print(res.status_code)
+            res = requests.post(upload_link, files=images, data=deal, headers=self.headers)
+
+            # print(res.status_code) # TODO backend 500 issue check
             if res.status_code == 400:
                 print(res.reason)
                 print(res.text)
