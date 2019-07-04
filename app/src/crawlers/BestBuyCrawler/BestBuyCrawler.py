@@ -5,6 +5,7 @@ import json
 from src.utils.SaveSource import save_source_to_file, save_json_to_xml, save_dict_to_csv, save_list_dict_to_csv
 import csv
 import time
+import copy
 from src.utils.Uploader import Uploader
 
 class BestBuyCrawler:
@@ -27,26 +28,26 @@ class BestBuyCrawler:
         self.showOptions = self.defaultOptions  + self.offerOptions + self.imageOptions
 
         self.nomalize_dict = {
-            # "image": "image",
-            # "sku": "sku",
-            # "date_start": "date_start",
-            # "date_expire": "date_expire",
-            # "details": "details",
-            # "coupon_code": "coupon_code",
-            # "category": "category",
-            # "source": "source",
-            # "features": "features",
-            # "manufacturer": "manufacturer",
+            "image": "image",
+            "sku": "sku",
+            "date_start": "date_start",
+            "date_expire": "date_expire",
+            "details": "details",
+            "coupon_code": "coupon_code",
+            "category": "category",
+            "source": "source",
+            "features": "features",
+            "manufacturer": "manufacturer",
 
-            "deal_link": "mobileUrl",
-            "title": "name",
-            "body": "longDescription",
-            "customer_review": "customerReviewAverage",
-            "dollar_savings": "dollarSavings",
-            "model_number": "modelNumber",
-            "percent_savings": "percentSavings",
-            "regular_price": "regularPrice",
-            "sale_price": "salePrice",
+            "mobileUrl": "deal_link",
+            "name": "title",
+            "longDescription": "body",
+            "customerReviewAverage": "customer_review",
+            "dollarSavings": "dollar_savings",
+            "modelNumber": "model_number",
+            "percentSavings": "percent_savings",
+            "regularPrice": "regular_price",
+            "salePrice": "sale_price",
         }
     
     def run(self, totalPage=1,  *args, **kwargs):
@@ -88,16 +89,19 @@ class BestBuyCrawler:
         """
         Normalize deal
         """
+        ret_deal_list = []
         for deal in deals:
-            for k, v in nomalize_dict.items():
-                if k not in deal:
-                    deal[k] = deal[v]
-                    del deal[v]
-            if len(deal["offers"]):
-                deal["date_start"] = deal["offers"][0]["startDate"]
-                deal["date_expire"] = deal["offers"][0]["endDate"]
-            deal["source"] = "BestBuy"
-        return deals
+            ret_deal = {}
+            for k in deal.keys():
+                if k in nomalize_dict:
+                    ret_deal[nomalize_dict[k]] = deal[k]
+
+            if deal["offers"]:
+                ret_deal["date_start"] = deal["offers"][0]["startDate"]
+                ret_deal["date_expire"] = deal["offers"][0]["endDate"]
+            ret_deal["source"] = "BestBuy"
+            ret_deal_list.append(copy.deepcopy(ret_deal))
+        return ret_deal_list
 
     def fetch_onsale_products(self, page=1, percentSavings=50):
         """
