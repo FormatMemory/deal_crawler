@@ -54,8 +54,9 @@ class Uploader:
         for image_field in image_fields:
             image_name, file_path, img_file = self.image_getter(deal, image_field, save_file=False)
             images[image_field] = (image_name, img_file)
+            # deal[image_field] = (image_name, deal[image_field])
             # deal[image_field] = image_name
-            del deal[image_field]
+            # del deal[image_field]
             # ('file.zip', open('file.zip', 'rb'), 'text/plain')
         try:
             # res = requests.post(upload_link, files=images, data=deal, headers=self.headers)
@@ -64,8 +65,8 @@ class Uploader:
                 print(json.dumps(deal))
                 print(images)
                 print("\n")
-
-            res = requests.post(upload_link, files=images, data=deal, headers=self.headers)
+            # deal.update(images)
+            res = requests.post(upload_link,  data=deal, headers=self.headers)
 
             # print(res.status_code) # TODO backend 500 issue check
             if res.status_code == 400:
@@ -101,4 +102,5 @@ class Uploader:
             img_file = open(file_path, 'rb')
         else:
             img_file = Image.open(io.BytesIO(r.content))
+            # img_file = r.content
         return name,  save_path + name, img_file
