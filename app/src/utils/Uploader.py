@@ -56,24 +56,27 @@ class Uploader:
             images[image_field] = (image_name, img_file)
             # deal[image_field] = (image_name, deal[image_field])
             # deal[image_field] = image_name
-            # del deal[image_field]
+            del deal[image_field]
             # ('file.zip', open('file.zip', 'rb'), 'text/plain')
         try:
-            # res = requests.post(upload_link, files=images, data=deal, headers=self.headers)
             if DEBUG_MODE:
                 print("Upload:")
                 print(json.dumps(deal))
                 print(images)
                 print("\n")
             # deal.update(images)
-            res = requests.post(upload_link,  data=deal, headers=self.headers)
 
-            # print(res.status_code) # TODO backend 500 issue check
-            if res.status_code == 400:
+            # upload detail
+            res = requests.post(upload_link, data=deal, headers=self.headers)
+            print(res.status_code) # TODO backend 500 issue check
+            if res.status_code != 201:
                 print(res.reason)
                 print(res.text)
-                raise Exception("Error orrcused at Uploader.upload_single_deal: upload error return status 400")
-            
+                raise Exception("Error orrcused at Uploader.upload_single_deal: upload error return status "+ str(res.status_code))
+            else:
+                # upload image
+                pass
+
         except Exception as e:
             print("Error orrcused at Uploader.upload_single_deal: "+str(e))
         finally:
