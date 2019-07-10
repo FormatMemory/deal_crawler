@@ -41,24 +41,23 @@ def test_upload_posts():
 
     print("Upload:")
     print(deal)
-    # print(img_file)
     print("\n")
     
     # create post and get id
-    # res = requests.post(DEAL_SITE_API_DOOR, data=deal, headers=headers)
+    res = requests.post(DEAL_SITE_API_DOOR, data=deal, headers=headers)
     
-    # print(res.status_code)
-    # ret_json = res.json()
-    # print(ret_json)
-    # post_id = ret_json['id']
+    print(res.status_code)
+    ret_json = res.json()
+    print(ret_json)
+    post_id = ret_json['id']
 
-    # if res.status_code != 201:
-    #     print(res.reason)
-    #     print(res.text)
-    #     raise Exception("Error orrcused at Uploader.upload_single_deal: upload error return status "+ str(res.status_code))
-    # # # upload image to post
+    if res.status_code != 201:
+        print(res.reason)
+        print(res.text)
+        raise Exception("Error orrcused at Uploader.upload_single_deal: upload error return status "+ str(res.status_code))
+    # # upload image to post
 ##
-    post_id = 173 
+    # post_id = 173 
     headers2 = {
         "Authorization": "Token " + DEAL_SITE_TOKEN,
         "Content-Type": "multipart/form-data; name=upload_file; filename=file.txt"
