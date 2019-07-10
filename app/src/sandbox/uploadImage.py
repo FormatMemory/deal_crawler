@@ -8,7 +8,7 @@ from PIL import Image
 import io
 import base64
 
-def test_upload_posts():
+def test_upload_posts_seperate():
     headers = {
                 "Authorization": "Token " + DEAL_SITE_TOKEN,
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -36,12 +36,6 @@ def test_upload_posts():
     img_file = base64.b64encode(img_file)
     deal = {"title": "Test Image upload", "body":"image upload"}
     image = {"image": img_file}
-    print(image)
-    # deal['image'] = img_file
-
-    print("Upload:")
-    print(deal)
-    print("\n")
     
     # create post and get id
     res = requests.post(DEAL_SITE_API_DOOR, data=deal, headers=headers)
@@ -72,3 +66,39 @@ def test_upload_posts():
     else:
         print("upload image ok")
 
+
+def test_upload_posts_together():
+    headers = {
+                "Authorization": "Token " + DEAL_SITE_TOKEN,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+    image_link = "https://img.bbystatic.com/BestBuy_US/images/products/5997/5997105_sa.jpg"
+    print(image_link)
+    r = requests.get(image_link, stream=True, allow_redirects=True)
+    r.raise_for_status()
+    if False:
+        save_path = IMG_SAVE_PATH
+        name = "qqqq"
+        if DEBUG_MODE:
+            print(image_link+"\n       ---> "+save_path + name)
+        with open(save_path + name, 'wb') as f:
+            for chunk in r.iter_content(chunk_size = 128):
+                f.write(chunk)
+        img_file = open(save_path + name, 'rb')
+    else:
+        img_file = base64.b64encode(img_file)
+
+    deal = {"title": "Together Test Image upload", "body":"image upload"}
+    deal["image"] = img_file
+    
+    res = requests.post(DEAL_SITE_API_DOOR, data=deal, headers=headers)
+    
+    print(res.status_code)
+    ret_json = res.json()
+    print(ret_json)
+    post_id = ret_json['id']
+
+    if res.status_code != 201:
+        print(res.reason)
+        print(res.text)
+        raise Exception("Error orrcused at Uploader.upload_single_deal: upload error return status "+ str(res.status_code))
