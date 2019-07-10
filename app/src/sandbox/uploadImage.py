@@ -86,7 +86,7 @@ def test_upload_posts_together():
                 f.write(chunk)
         img_file = open(save_path + name, 'rb')
     else:
-        img_file = base64.b64encode(img_file)
+        img_file = base64.b64encode(r.content)
 
     deal = {"title": "Together Test Image upload", "body":"image upload"}
     deal["image"] = img_file
