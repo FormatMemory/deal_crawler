@@ -94,7 +94,7 @@ class BestBuyCrawler:
             ret_deal = {}
             for k in deal.keys():
                 if k in nomalize_dict:
-                    if deal[k] not in [None, "None", "null", "NULL", "Null", ""]:
+                    if deal[k] not in [None, "None", "null", "NULL", "Null", "", [], (), {}]:
                         if type(deal[k]) not in (int, str, float):
                             ret_deal[nomalize_dict[k]] = str(deal[k])
                         else:
