@@ -6,7 +6,7 @@ from src.utils.NameGenerators import generateUniqueFileName
 import json
 from PIL import Image
 import io
-
+import base64
 
 def test_upload_posts():
     headers = {
@@ -18,20 +18,25 @@ def test_upload_posts():
     print(image_link)
     r = requests.get(image_link, stream=True, allow_redirects=True)
     r.raise_for_status()
-    
-    if save_file:
+    save_path = IMG_SAVE_PATH
+    name = "qqqq"
+    if False:
         if DEBUG_MODE:
             print(image_link+"\n       ---> "+save_path + name)
         with open(save_path + name, 'wb') as f:
             for chunk in r.iter_content(chunk_size = 128):
                 f.write(chunk)
-        img_file = open(file_path, 'rb')
+        img_file = open(save_path + name, 'rb')
     else:
         # img_file = Image.open(io.BytesIO(r.content))
+        # img_file = base64.b64encode(r.content)
         img_file = r.content
-    
+
+    # img_file = open("/Users/yusheng/Downloads/1065-IMG_2529.jpg", 'rb')
+    img_file = base64.b64encode(img_file)
     deal = {"title": "Test Image upload", "body":"image upload"}
-    image = ("file.jpg", img_file)
+    image = {"image": img_file}
+    print(image)
     # deal['image'] = img_file
 
     print("Upload:")
@@ -56,9 +61,11 @@ def test_upload_posts():
     post_id = 173 
     headers2 = {
         "Authorization": "Token " + DEAL_SITE_TOKEN,
-        "Content-Type": "multipart/form-data"
+        "Content-Type": "multipart/form-data; name=upload_file; filename=file.txt"
     }
-    res = requests.patch(DEAL_SITE_POST_DETAIL+str(post_id), files=img_file, headers=headers)
+    res = requests.patch(DEAL_SITE_POST_DETAIL+str(post_id), data=image, headers=headers)
+    print(res.reason)
+    print(res.text)
     if res.status_code != 200:
         print(res.reason)
         print(res.text)
