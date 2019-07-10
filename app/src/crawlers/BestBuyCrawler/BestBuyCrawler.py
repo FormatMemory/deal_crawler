@@ -51,11 +51,11 @@ class BestBuyCrawler:
         }
     
     def run(self, totalPage=1,  *args, **kwargs):
-        '''
+        """
         run BestBuy crawler,
         receive parameters: percentSavings:numeric, save_csv: boolean, upload_details:boolean
         totalPage = -1 means fetch all pages
-        '''
+        """
         if "percentSavings" in kwargs:
             if kwargs["percentSavings"] < 0 or kwargs["percentSavings"] > 100:
                 raise Exception("Error occured in BestBuyCrawler.run, input percentSavings should in range [0,100]")
@@ -94,10 +94,11 @@ class BestBuyCrawler:
             ret_deal = {}
             for k in deal.keys():
                 if k in nomalize_dict:
-                    if type(deal[k]) not in (int, str, float):
-                        ret_deal[nomalize_dict[k]] = str(deal[k])
-                    else:
-                        ret_deal[nomalize_dict[k]] = deal[k]
+                    if deal[k] not in [None, "None", "null", "NULL", "Null", ""]:
+                        if type(deal[k]) not in (int, str, float):
+                            ret_deal[nomalize_dict[k]] = str(deal[k])
+                        else:
+                            ret_deal[nomalize_dict[k]] = deal[k]
 
             if deal["offers"]:
                 ret_deal["date_start"] = deal["offers"][0]["startDate"]
