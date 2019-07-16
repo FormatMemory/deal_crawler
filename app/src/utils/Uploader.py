@@ -33,12 +33,15 @@ class Uploader:
         total = 0
         total_success = 0
         for deal in deals:
-            isSuccess = self.upload_single_deal(deal, image_fields, upload_link)
-            count +=1
-            if count%deal_chunk == 0:
-                time.sleep(1)
-            total += 1
-            total_success += int(isSuccess)
+            try:
+                isSuccess = self.upload_single_deal(deal, image_fields, upload_link)
+                count +=1
+                if count%deal_chunk == 0:
+                    time.sleep(1)
+                total += 1
+                total_success += int(isSuccess)
+            except Exception as e:
+                print("Error orrcused at Uploader.upload_deals: "+str(e))
         print("Uploader run finish")
         print("Total: "+ str(total) + " Success: "+str(total_success))
 
